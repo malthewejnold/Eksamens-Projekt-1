@@ -1,0 +1,261 @@
+package controllers;
+
+import data.Data;
+import models.CykelTur;
+import models.Person;
+
+import java.util.ArrayList;
+import java.util.InputMismatchException;
+import java.util.Scanner;
+
+//Denne klasse er udarbejdet af Malthe og Martin
+
+public class PersonController {
+
+    Data db;
+    Data data;
+    Scanner input = new Scanner(System.in);
+    protected Person currentPerson;
+
+
+    public PersonController(Data data) {
+        this.data = data;
+
+    }
+
+
+    protected void brugerMenu() {
+
+        //Almindelig brugers menu
+
+        int i;
+
+        do {
+            try {
+                System.out.println("Vælg hvad du vil gøre nu?\n1) Vis dine samlede tal" +
+                        "\n2) Vis samlede tal for alle\n3) Indtaste nye tal\n4) Vis alle brugere \n5) Nulstil dine tal \n0) Log ud");
+
+                i = input.nextInt();
+
+                switch (i) {
+
+                    case 1:
+                        visIndividuelleTal();
+                        break;
+                    case 2:
+                        visSamledeTalForAlle();
+                        break;
+                    case 3:
+                        indtastData();
+                        break;
+                    case 4:
+                        visAlleBrugere();
+                        break;
+                    case 5:
+                        nulstilPersonligeData();
+                        break;
+                    case 0:
+                        logout();
+                        break;
+                    default:
+                        System.out.println("Du har tastet forkert. Prøv igen!");
+                }
+            } catch (Exception e) {
+                System.out.println("Du har tastet noget forkert. Prøv igen");
+            }
+        } while (currentPerson != null);
+    }
+
+    //Her vises currentPersons tal både samlet og på den sidste tur
+    public void visIndividuelleTal() {
+
+        ArrayList<CykelTur> cykelTurer = currentPerson.getCykelTurer();
+        double kalorier = currentPerson.getTotalKalorier();
+        double afstand = currentPerson.getTotalAfstand();
+        double tid = currentPerson.getTotalTid();
+        double vaegt = cykelTurer.get(cykelTurer.size() - 1).getVaegt();
+
+        System.out.printf("Du har forbrændt %.1f kalorier\n", kalorier);
+        System.out.printf("Du har kørt %.1f km.\n", afstand);
+        System.out.printf("Du har brugt %.1f minutter\n", tid);
+        System.out.printf("Du vejer %.1f kg.", vaegt);
+
+        System.out.println("\n\nPå din sidste tur");
+        System.out.printf("Forbrændte du: %.1f kalorier\n", cykelTurer.get(cykelTurer.size() - 1).getKalorier());
+        System.out.printf("Kørte du: %.1f kilometer\n", cykelTurer.get(cykelTurer.size() - 1).getAfstand());
+        System.out.printf("Kørte du: %.1f minutter\n", cykelTurer.get(cykelTurer.size() - 1).getTid());
+        System.out.printf("Kørte du: %.1f kg.\n", cykelTurer.get(cykelTurer.size() - 1).getVaegt());
+        System.out.println("\n");
+
+    }
+
+    /* Her vises samlede tal for alle brugere samt hvem der fører i forhold til mest forbrændt kalorier,
+    længste distance og længste tid på cyklen*/
+    public void visSamledeTalForAlle() {
+
+
+        ArrayList<CykelTur> cykelTurer = currentPerson.getCykelTurer();
+        double tidTotal = 0;
+        double afstandTotal = 0;
+        double kalorierTotal = 0;
+
+
+        for (int i = 0; i < cykelTurer.size(); i++) {
+
+            tidTotal += currentPerson.getCykelTurer().get(i).getTid();
+            afstandTotal += currentPerson.getCykelTurer().get(i).getAfstand();
+            kalorierTotal += currentPerson.getCykelTurer().get(i).getKalorier();
+        }
+
+        // Den person som har forbrændt flest kalorier findes
+        Person vinderKalorier = data.getPersoner().get(0);
+
+        for (Person person : data.getPersoner()) {
+
+            if(vinderKalorier.getTotalKalorier() < person.getTotalKalorier()) {
+                vinderKalorier = person;
+
+            }
+
+        }
+
+        // Den person som har kørt i længst tid findes
+        Person vinderTid = data.getPersoner().get(0);
+
+        for (Person person : data.getPersoner()) {
+
+            if(vinderTid.getTotalTid() < person.getTotalTid()) {
+                vinderTid = person;
+            }
+
+        }
+
+        // Den person som har kørt den længste distance findes
+        Person vinderAfstand = data.getPersoner().get(0);
+
+        for (Person person : data.getPersoner()) {
+
+            if(vinderAfstand.getTotalAfstand() < person.getTotalAfstand()) {
+                vinderAfstand = person;
+            }
+
+        }
+
+        System.out.printf("Der er totalt blevet kørt i %.1f minutter\n", tidTotal);
+        System.out.printf("Der er totalt blevet kørt %.1f km.\n", afstandTotal);
+        System.out.printf("Der er totalt blevet forbrændt %.1f kalorier\n", kalorierTotal);
+        System.out.println(vinderKalorier.getUserName() + " har forbrændt mest med " + vinderKalorier.getTotalKalorier() + " kalorier");
+        System.out.println(vinderTid.getUserName() + " har cyklet i længest tid " + vinderTid.getTotalTid() + " minutter");
+        System.out.println(vinderAfstand.getUserName() + " har cyklet længest " + vinderAfstand.getTotalAfstand() + " kilometer");
+
+        System.out.println("\n");
+
+    }
+
+
+    public void indtastData() {
+
+        double afstand = 0;
+        double vaegt = 0;
+        double tid = 0;
+
+        /*
+        Brugere skal nu indtaste følgende:
+        Afstand
+        Vægt
+        Tid
+        */
+
+        do {
+            try {
+                System.out.println("Hvor langt cykler du til arbejde?(km)");
+                afstand = input.nextDouble();
+
+                System.out.println("Hvor meget vejer du?(kg)");
+                vaegt = input.nextDouble();
+
+
+                System.out.println("Hvor lang tid tog det?(minutter)");
+                tid = input.nextDouble();
+
+            } catch (InputMismatchException e) {
+                System.out.println("Du skal indtaste tal");
+                System.out.println("Har du indtastet decimal tal så brug ',' og ikke punktum");
+                input.next();
+            }
+
+        } while (afstand < 0);
+
+
+        double kalorierForbraendtPaaTuren = kalorierForbraendt(afstand, vaegt, tid);
+        CykelTur cykelTur = new CykelTur(afstand, vaegt, tid, kalorierForbraendtPaaTuren);
+        currentPerson.getCykelTurer().add(cykelTur);
+
+
+    }
+
+    //Beregner hvor mange kalorier der blev forbrændt på den sidste tur og printer det
+    public double kalorierForbraendt(double afstand, double vaegt, double tid) {
+
+        double talDerBeregnerKalorieForbraening = 0;
+        double kalorier;
+        if (currentPerson.getKoen().equals("mand")) {
+            talDerBeregnerKalorieForbraening = 0.26;
+        }
+        else if (currentPerson.getKoen().equals("kvinde")){
+            talDerBeregnerKalorieForbraening = 0.3;
+        }
+
+        kalorier = afstand * vaegt * talDerBeregnerKalorieForbraening;
+        System.out.printf("\nDu har forbrændt %.1f kalorier på vej til arbejde\n", kalorier);
+        System.out.println("\n");
+
+        return kalorier;
+
+    }
+
+    //Viser alle brugeres navn og deres totale kalorie forbrændning
+    public void visAlleBrugere() {
+
+        System.out.println("Brugernavn         Total kalorieforbrædning");
+
+        for(int i = 0; i< data.getPersoner().size(); i++){
+
+            System.out.printf("%-10s \t %,10.2f\n",data.getPersoner().get(i).getUserName(), data.getPersoner().get(i).getTotalKalorier());
+
+        }
+
+    }
+
+    //Brugeren nulstiller sine tal til 0
+    private void nulstilPersonligeData(){
+
+
+        currentPerson.getCykelTurer().removeAll(currentPerson.getCykelTurer());
+
+        System.out.println("Du har nulstillet dine tal\n");
+
+        CykelTur nyC = new CykelTur(0, 0, 0, 0);
+
+        currentPerson.getCykelTurer().add(nyC);
+
+
+    }
+
+    //Denne metode bruges til at logge ud
+    public void logout() {
+
+        currentPerson = null;
+    }
+
+
+    public void setCurrentUser(Person currentUser) {
+        this.currentPerson = currentUser;
+    }
+
+}
+
+
+
+
+

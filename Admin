@@ -1,0 +1,16 @@
+package models;
+
+//Denne klasse er udarbejdet af Malthe og Martin
+
+
+//Denne klasse er nedarvet af person. Det eneste klassen bruges til er at tjekke hvad en bruger er i login
+public class Admin extends Person {
+
+
+    public Admin(String userName, int pinkode, String koen) {
+        super(userName, pinkode, koen);
+    }
+
+}
+
+

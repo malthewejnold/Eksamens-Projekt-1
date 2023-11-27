@@ -1,0 +1,51 @@
+package data;
+
+import models.Admin;
+import models.CykelTur;
+import models.Person;
+
+import java.util.ArrayList;
+
+//Denne klasse er udarbejdet af Malthe og Trym
+
+public class Data {
+
+    ArrayList<Person> personer = new ArrayList<>();
+
+
+    public Data (){
+        generateData();
+    }
+
+
+    public void generateData() {
+
+        //Dette er nogle prædifinerede personer. Inge-Lise er admin
+        Admin admin1 = new Admin("Inge-Lise", 1111, "kvinde");
+        Person person1 = new Person("Michael", 2222, "mand");
+        Person person2 = new Person("Filip", 3333, "mand");
+
+        personer.add(admin1);
+        personer.add(person1);
+        personer.add(person2);
+
+
+        //Der oprettes prædifinerede cykelturer. Hertil tilføjes de prædifinerede cykelture til en person
+        CykelTur c1 = new CykelTur(0, 0, 0, 0);
+        CykelTur c2 = new CykelTur(0,0,0,0 );
+        CykelTur c3 = new CykelTur(0, 0,0, 0 );
+
+        admin1.getCykelTurer().add(c1);
+        person1.getCykelTurer().add(c2);
+        person2.getCykelTurer().add(c3);
+
+    }
+
+
+
+
+    public ArrayList<Person> getPersoner() { return personer; }
+
+}
+
+

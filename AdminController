@@ -1,0 +1,342 @@
+package controllers;
+
+import data.Data;
+import models.Admin;
+import models.CykelTur;
+import models.Person;
+
+//Denne klasse er udabejdet af Martin og Trym
+
+public class AdminController extends PersonController {
+
+    Person personDerSkalRedigeres;
+    Person personDerSkalSlettes;
+
+    // Da klassen er nedarvning af personcontroller kan de samme metoder og attributter bruges
+    public AdminController(Data data) {
+        super(data);
+    }
+
+    //Den advancerede admin menu
+    public void adminMenu() {
+
+        int valg;
+
+        do {
+
+            System.out.println("Vælg hvad du vil gøre nu?");
+            System.out.println("1) Vis dine samlede tal");
+            System.out.println("2) Vis samlede tal for alle");
+            System.out.println("3) Indtaste nye tal");
+            System.out.println("4) Vis alle brugere");
+            System.out.println("5) Opret bruger");
+            System.out.println("6) Slet bruger");
+            System.out.println("7) Rediger bruger");
+            System.out.println("0) Log ud");
+
+            valg = input.nextInt();
+
+            switch (valg) {
+                case 1:
+                    visIndividuelleTal();
+                    break;
+                case 2:
+                    visSamledeTalForAlle();
+                    break;
+                case 3:
+                    indtastData();
+                    break;
+                case 4:
+                    visAlleBrugere();
+                    break;
+                case 5:
+                    opretBrugerAdmin();
+                    break;
+                case 6:
+                    sletBruger();
+                    break;
+                case 7:
+                    redigerBruger();
+                    break;
+                case 0:
+                    logout();
+                    break;
+                default:
+                    System.out.println("Du har valgt forkert. Prøv igen");
+
+            }
+
+        } while (currentPerson != null);
+
+    }
+
+
+    // Her kan en admin oprette en ny bruger. Admin kan også oprette en ny admin
+    public void opretBrugerAdmin() {
+
+        String nytUserName;
+        int nyPinkode = 0;
+        int nyPinkodeTjek;
+        String nytKoen;
+        boolean eksisterendeBruger;
+        int typeAfBruger;
+
+
+        do {
+            eksisterendeBruger = false;
+
+            System.out.println("Hvad skal den nye brugers brugernavn være?");
+
+            nytUserName = input.next();
+
+            for (Person person : data.getPersoner()) {
+
+                if (person.getUserName().equals(nytUserName)) {
+                    eksisterendeBruger = true;
+                    System.out.println("Denne bruger findes allerede. Prøv igen");
+                }
+
+            }
+
+        } while (eksisterendeBruger);
+
+        do {
+            try {
+                System.out.println("Hvad skal den nye brugers pinkode være?");
+
+                nyPinkode = input.nextInt();
+
+            } catch (Exception e) {
+                System.out.println("Du skal indtaste et heltal. Prøv igen.");
+                input.next();
+            }
+
+
+            System.out.println("Indtast pinkoden igen");
+
+            nyPinkodeTjek = input.nextInt();
+
+            if (nyPinkode == nyPinkodeTjek) {
+                System.out.println("Hvad køn er brugeren? mand/kvinde");
+
+                nytKoen = input.next();
+
+                System.out.println("Vælg hvad du vil");
+                System.out.println("1) Oprette en almindelig bruger");
+                System.out.println("2) Oprette en admin bruger");
+
+                typeAfBruger = input.nextInt();
+
+                do {
+                    switch (typeAfBruger) {
+
+                        case 1:
+                            System.out.printf("Du har nu oprettet %s som bruger\n", nytUserName);
+
+                            Person personer = new Person(nytUserName, nyPinkode, nytKoen);
+
+                            data.getPersoner().add(personer);
+
+                            CykelTur cykelTur = new CykelTur(0, 0, 0, 0);
+
+                            personer.getCykelTurer().add(cykelTur);
+                            break;
+
+                        case 2:
+                            System.out.printf("Du har nu oprettet %s som admin", nytUserName);
+
+                            Admin admins = new Admin(nytUserName, nyPinkode, nytKoen);
+
+                            data.getPersoner().add(admins);
+
+                            CykelTur cykelTurAdmin = new CykelTur(0, 0, 0, 0);
+
+                            admins.getCykelTurer().add(cykelTurAdmin);
+                            break;
+
+                        default:
+                            System.out.println("Vælg venligst 1 eller 2");
+                    }
+                } while (typeAfBruger != 1 && typeAfBruger != 2);
+
+
+            } else {
+                System.out.println("Pinkoderne mathcer ikke");
+
+            }
+        } while (nyPinkode != nyPinkodeTjek);
+
+
+    }
+
+
+    //Admin kan slette en bruger
+    private void sletBruger() {
+
+        boolean tjek = false;
+        int i;
+        int indexAfPersonDerSkalSlettes;
+
+        do {
+            System.out.println("Hvilken bruger vil du gerne slette");
+
+            for (i = 0; i < data.getPersoner().size(); i++) {
+
+                System.out.print(i+1 + ") " + data.getPersoner().get(i).getUserName() + "\n");
+
+            }
+
+            indexAfPersonDerSkalSlettes = input.nextInt();
+
+            personDerSkalSlettes = this.data.getPersoner().remove(indexAfPersonDerSkalSlettes-1);
+
+            System.out.println("Du har slettet brugeren");
+
+
+        }while (tjek);
+
+    }
+
+    //Her kan admin redigere en specifik bruger
+    public void redigerBruger() {
+
+        boolean tjek = false;
+        int i;
+        int indexAfPersonDerSkalRedigeres;
+
+        do {
+            System.out.println("Hvilken bruger vil du gerne redigere");
+
+            for (i = 0; i < data.getPersoner().size(); i++){
+
+                System.out.print(i+1 + ") " + data.getPersoner().get(i).getUserName() + "\n");
+
+            }
+
+            indexAfPersonDerSkalRedigeres = input.nextInt();
+
+            personDerSkalRedigeres = this.data.getPersoner().get(indexAfPersonDerSkalRedigeres-1);
+
+            System.out.println("Du har valgt at redigere " + personDerSkalRedigeres.getUserName() + "\n");
+
+            System.out.println("Hvad vil du redigere");
+            System.out.println("1) Rediger brugernavn");
+            System.out.println("2) Rediger pinkode");
+            System.out.println("3) Nulstil tal");
+            System.out.println("0) Gå tilbage");
+
+            switch (input.nextInt()){
+
+                case 1:
+                    redigerUsername();
+                    break;
+                case 2:
+                    redigerPinkode();
+                    break;
+                case 3:
+                    nulstilTal();
+                    break;
+                case 0:
+                    break;
+                default:
+                    System.out.println("Du har valgt forkert. Prøv igen");
+
+            }
+
+        } while (tjek);
+    }
+
+    //Admin kan redigere brugerens username
+    private void redigerUsername() {
+
+        boolean eksisterendeBruger;
+        String nytUserName;
+
+
+        do {
+            eksisterendeBruger = false;
+
+            System.out.println("Hvad skal det nye brugernavn være?");
+
+            nytUserName = input.next();
+
+            for (Person person : data.getPersoner()) {
+
+                if (person.getUserName().equals(nytUserName)) {
+                    eksisterendeBruger = true;
+                    System.out.println("Brugernavnet findes allerede. Prøv igen");
+                }
+
+            }
+            personDerSkalRedigeres.setUserName(nytUserName);
+
+        } while (eksisterendeBruger);
+
+    }
+
+    //Admin kan redigere brugerens pinkode
+    private void redigerPinkode() {
+
+        int pinkodeGammel;
+        int nyPinkode;
+        int nyPinkodeTjek;
+        boolean tjek = false;
+
+        System.out.println("Indtast din gamle kode");
+
+        pinkodeGammel = input.nextInt();
+
+        while(pinkodeGammel == personDerSkalRedigeres.getPinkode()){
+
+            if (pinkodeGammel == personDerSkalRedigeres.getPinkode()) {
+
+                System.out.println("Hvad skal din nye pinkode være?");
+
+                nyPinkode = input.nextInt();
+
+                System.out.println("Indtast din nye pinkode igen");
+
+                nyPinkodeTjek = input.nextInt();
+
+                if (nyPinkode == nyPinkodeTjek) {
+                    tjek = true;
+                    personDerSkalRedigeres.setPinkode(nyPinkode);
+                }
+
+                else {
+                    System.out.println("Dine pinkoder mathcer ikke");
+
+                }
+            }
+
+            else{
+
+                System.out.println("Du har ikke tastet din gamle kode korrekt");
+
+            }
+
+        }
+
+        System.out.println("Din kode er blevet ændret");
+
+    }
+
+
+    //Admin kan nulstille den specifikke brugers tal
+    private void nulstilTal() {
+
+
+        personDerSkalRedigeres.getCykelTurer().removeAll(personDerSkalRedigeres.getCykelTurer());
+
+        CykelTur c = new CykelTur(0, 0, 0, 0);
+
+        personDerSkalRedigeres.getCykelTurer().add(c);
+
+
+        System.out.println("Du har nulstille brugerens tal\n");
+
+    }
+
+
+
+}

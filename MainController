@@ -1,0 +1,184 @@
+package controllers;
+
+import data.Data;
+import models.Admin;
+import models.CykelTur;
+import models.Person;
+
+import java.util.InputMismatchException;
+import java.util.Scanner;
+
+// Denne klasse er udarbejdet af Malthe og Trym
+
+public class MainController {
+
+    private Data data;
+    private Person currentPerson;
+    private PersonController personController;
+    private AdminController adminController;
+    private Scanner input = new Scanner(System.in);
+
+
+    public MainController() {
+        data = new Data();
+        personController = new PersonController(data);
+        adminController = new AdminController(data);
+
+    }
+
+    public void run() {
+
+        login();
+    }
+
+    // Her logger brugeren ind ved at indtaste sit brugernavn og pinkode
+    private void login() {
+        int valg;
+
+        do {
+
+            System.out.println("Vælg:");
+            System.out.println("1) Login");
+            System.out.println("2) Opret dig som bruger");
+            System.out.println("3) Se alle brugere - kræver ikke login");
+            System.out.println("0) Afbryd program");
+
+            valg = input.nextInt();
+
+            switch (valg) {
+
+                case 1:
+                    brugerLogin();
+                    break;
+                case 2:
+                    opretBruger();
+                    break;
+                case 3:
+                    personController.visAlleBrugere();
+                    break;
+                case 0:
+                    System.out.println("Tak for i dag");
+                    break;
+                default:
+                    System.out.println("Du har valgt forkert");
+            }
+        } while (valg != 0);
+
+    }
+
+    /* Programmet checker ved hjælp af validate metoden om det stemmer
+     overens hvad brugeren har indtastet og om brugeren findes i data basen */
+
+    public void brugerLogin() {
+
+
+        try {
+            System.out.println("Indtast Brugernavn");
+            String username = input.next();
+            System.out.println("Indtast Pinkode");
+            int pinkodeIndtast = input.nextInt();
+
+            if (validate(username, pinkodeIndtast)) {
+                personController.setCurrentUser(currentPerson);
+                adminController.setCurrentUser(currentPerson);
+
+                // Her tjekkes om brugeren er admin. Hvis brugeren er admin bliver brugeren præsenteret med en advanceret menu
+                if (currentPerson instanceof Admin){
+
+                    adminController.adminMenu();
+
+
+                } else {
+
+                    personController.brugerMenu();
+                }
+
+            } else {
+                System.out.println("Forkert brugernavn eller pinkode! Prøv igen:");
+            }
+
+        } catch (InputMismatchException e) {
+
+            System.out.println("Du skal taste et heltal i pinkode");
+            input.next();
+
+        }
+
+
+    }
+
+    //Validering af om brugeren eksistere
+
+    public Boolean validate(String username, int pinkodeIndtast) {
+        for (Person person : data.getPersoner()) {
+            if (person.getUserName().equals(username) && person.getPinkode() == pinkodeIndtast) {
+                currentPerson = person;
+                System.out.println("\nVelkommen " + username + "\n");
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /* Denne metode bruges til at oprette en ny bruger.
+     Denne bruger vil som default være almindelig. Kun en admin bruger kan oprette en ny admin */
+
+    public void opretBruger() {
+
+        String nytUserName;
+        int nyPinkode;
+        int nyPinkodeTjek;
+        String nytKoen;
+        boolean eksisterendeBruger;
+
+        do {
+            eksisterendeBruger = false;
+
+            System.out.println("Hvad skal dit brugernavn være?");
+
+            nytUserName = input.next();
+
+            for (Person person : data.getPersoner()) {
+
+                if (person.getUserName().equals(nytUserName)) {
+                    eksisterendeBruger = true;
+                    System.out.println("Brugernavnet findes allerede. Prøv igen");
+                }
+
+            }
+
+        } while (eksisterendeBruger);
+
+        do {
+            System.out.println("Hvad skal din pinkode være?");
+
+            nyPinkode = input.nextInt();
+
+            System.out.println("Indtast din pinkode igen");
+
+            nyPinkodeTjek = input.nextInt();
+
+            if (nyPinkode == nyPinkodeTjek) {
+                System.out.println("Hvad køn er du? mand/kvinde");
+
+                nytKoen = input.next();
+
+                System.out.println("Du har nu oprettet dig som bruger");
+
+                Person personer = new Person(nytUserName, nyPinkode, nytKoen);
+
+                data.getPersoner().add(personer);
+
+                CykelTur cykelTur = new CykelTur(0, 0, 0, 0);
+
+                personer.getCykelTurer().add(cykelTur);
+            } else {
+                System.out.println("Dine pinkoder mathcer ikke");
+
+            }
+        } while (nyPinkode != nyPinkodeTjek);
+
+
+    }
+}
+

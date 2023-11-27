@@ -1,0 +1,74 @@
+package models;
+
+import java.util.ArrayList;
+
+//Denne klasse er udarbejdet af Malthe og Trym
+
+public class Person {
+
+    private String userName;
+    private int pinkode;
+    private String koen;
+    private ArrayList<CykelTur> cykelTurer = new ArrayList<>();
+
+
+    public Person(String userName, int pinkode, String koen) {
+        this.userName=userName;
+        this.pinkode=pinkode;
+        this.koen=koen;
+    }
+
+    //Dette er set metoder
+    public void setUserName(String userName) { this.userName = userName; }
+
+    public void setPinkode(int pinkode) { this.pinkode = pinkode; }
+
+    public void setKoen(String koen) { this.koen = koen; }
+
+
+    //Dette er get metoder
+    public String getUserName() { return userName; }
+
+    public int getPinkode() { return pinkode; }
+
+    public String getKoen() { return koen; }
+
+
+    public ArrayList<CykelTur> getCykelTurer() { return cykelTurer; }
+
+    public void setCykelTurer() { this.cykelTurer = cykelTurer; }
+
+    //Dette bruges til at sammenlægge brugerens kalorier for alle ture
+    public double getTotalKalorier() {
+        double totalKalorier = 0;
+        for(CykelTur cykelTur: cykelTurer) {
+            totalKalorier += cykelTur.getKalorier();
+        }
+        return totalKalorier;
+    }
+
+    //Dette bruges til at sammenlægge brugerens afstand for alle ture
+    public double getTotalAfstand(){
+        double totalAfstand = 0;
+
+        for (CykelTur cykelTur : cykelTurer) {
+            totalAfstand += cykelTur.getAfstand();
+        }
+
+        return totalAfstand;
+
+    }
+
+    //Dette bruges til at sammenlægge brugerens tid på cyklen for alle ture
+    public double getTotalTid(){
+        double totalTid = 0;
+
+        for (CykelTur cykelTur : cykelTurer) {
+            totalTid += cykelTur.getTid();
+        }
+
+        return totalTid;
+    }
+
+
+}

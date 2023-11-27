@@ -1,0 +1,29 @@
+import controllers.MainController;
+
+// Denne klasse er udarbejdet af Trym og Martin
+
+public class Main {
+
+    public static void main(String[] args){
+
+        //Blot en styling til at give programmet noget karakter
+
+        System.out.println("     ,--.      <__)");
+        System.out.println("     `- |________7");
+        System.out.println("        |`.      |");
+        System.out.println("     .--|. \\     |.\\--.");
+        System.out.println("    /   j \\ `.7__j__\\  \\");
+        System.out.println("   |   o   | (o)____O)  |");
+        System.out.println("    \\     /   J  \\     /");
+        System.out.println("     `---'        `---'  ");
+
+
+        //Programmet startes ved at oprette et objekt af MainController
+        MainController mainController = new MainController();
+        mainController.run();
+
+
+    }
+
+}
+

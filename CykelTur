@@ -1,0 +1,39 @@
+package models;
+
+//Denne klasse er udarbejdet af Trym og Martin
+
+public class CykelTur {
+
+    private double tid;
+    private double afstand;
+    private double kalorier;
+    private double vaegt;
+
+    public CykelTur(double afstand, double vaegt, double tid, double kalorier){
+
+        this.tid= tid;
+        this.afstand= afstand;
+        this.kalorier=kalorier;
+        this.vaegt= vaegt;
+
+    }
+
+    //Dette er setter for cykel turen
+    public void setTid(double tid) { this.tid = tid; }
+
+    public void setAfstand(double afstand) { this.afstand = afstand; }
+
+    public void setKalorier(double kalorier) { this.kalorier = kalorier; }
+
+    public void setVaegt(double vaegt) { this.vaegt = vaegt; }
+
+
+    //Dette er getter for cykel turen
+    public double getTid() { return tid; }
+
+    public double getAfstand() {return afstand; }
+
+    public double getKalorier() { return kalorier; }
+
+    public double getVaegt() { return vaegt; }
+}
